@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guide Mahjong - Combinaisons par Type</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8B0000, #DC143C);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        /* Menu Burger */
+        .menu-toggle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+        
+        .menu-toggle:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -350px;
+            width: 350px;
+            height: 100vh;
+            background: linear-gradient(180deg, #2c3e50, #34495e);
+            color: white;
+            transition: left 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.3);
+        }
+        
+        .sidebar.open {
+            left: 0;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #8B0000, #DC143C);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 1.3em;
+        }
+        
+        .nav-section {
+            padding: 0;
+        }
+        
+        .nav-section-title {
+            padding: 15px 20px;
+            background: rgba(255,255,255,0.1);
+            font-weight: bold;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .nav-item {
+            display: block;
+            padding: 12px 20px;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            padding-left: 30px;
+        }
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .category {
+            margin-bottom: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            scroll-margin-top: 20px;
+        }
+        
+        .category-header {
+            padding: 20px 25px;
+            color: white;
+            font-weight: bold;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .category-header::before {
+            content: "🀄";
+            font-size: 1.5em;
+        }
+        
+        .chows { background: linear-gradient(135deg, #4CAF50, #45a049); }
+        .chows .category-header::before { content: "🀇"; }
+        
+        .pungs { background: linear-gradient(135deg, #2196F3, #1976D2); }
+        .pungs .category-header::before { content: "🀒"; }
+        
+        .kongs { background: linear-gradient(135deg, #FF9800, #F57C00); }
+        .kongs .category-header::before { content: "🀫"; }
+        
+        .special { background: linear-gradient(135deg, #9C27B0, #7B1FA2); }
+        .special .category-header::before { content: "⭐"; }
+        
+        .honors { background: linear-gradient(135deg, #795548, #5D4037); }
+        .honors .category-header::before { content: "🀀"; }
+        
+        .extremes { background: linear-gradient(135deg, #607D8B, #455A64); }
+        .extremes .category-header::before { content: "🀐"; }
+        
+        .bonus { background: linear-gradient(135deg, #FF6F00, #E65100); }
+        .bonus .category-header::before { content: "🎁"; }
+        
+        .win-conditions { background: linear-gradient(135deg, #00C853, #00A248); }
+        .win-conditions .category-header::before { content: "🏆"; }
+        
+        .flowers { background: linear-gradient(135deg, #E91E63, #C2185B); }
+        .flowers .category-header::before { content: "🌸"; }
+        
+        .pure { background: linear-gradient(135deg, #00BCD4, #0097A7); }
+        .pure .category-header::before { content: "💎"; }
+        
+        .ultimate { background: linear-gradient(135deg, #FF5722, #D84315); }
+        .ultimate .category-header::before { content: "👑"; }
+        
+        .combinations {
+            background: white;
+            padding: 0;
+        }
+        
+        .combination {
+            padding: 15px 25px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background-color 0.3s ease;
+        }
+        
+        .combination:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .combination:last-child {
+            border-bottom: none;
+        }
+        
+        .combo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .combo-name {
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+        
+        .combo-points {
+            background: linear-gradient(135deg, #FF6B6B, #EE5A52);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            min-width: 40px;
+            text-align: center;
+        }
+        
+        .combo-description {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .combo-example {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .example-label {
+            font-size: 0.8em;
+            color: #667eea;
+            font-weight: bold;
+            min-width: 60px;
+        }
+        
+        .tiles {
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+        }
+        
+        .tile {
+            font-size: 1.2em;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 2px 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .legend {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .legend h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .tiles-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .tile-type {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        
+        .tile-type strong {
+            color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .combo-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .combo-points {
+                align-self: flex-end;
+            }
+            
+            .sidebar {
+                width: 100%;
+                left: -100%;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Overlay -->
+    <div class="overlay" onclick="closeSidebar()"></div>
+    
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>🀄 Navigation</h3>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">🏗️ Mains Principales</div>
+            <a href="#chows" class="nav-item" onclick="closeSidebar()">🀇 Mains basées sur les Chows</a>
+            <a href="#pungs" class="nav-item" onclick="closeSidebar()">🀒 Mains basées sur les Pungs</a>
+            <a href="#kongs" class="nav-item" onclick="closeSidebar()">🀫 Mains avec Kongs</a>
+            <a href="#honors" class="nav-item" onclick="closeSidebar()">🀀 Mains avec Honneurs</a>
+            <a href="#extremes" class="nav-item" onclick="closeSidebar()">🀐 Mains avec Extrémités</a>
+            <a href="#pure" class="nav-item" onclick="closeSidebar()">💎 Mains par Familles</a>
+            <a href="#special" class="nav-item" onclick="closeSidebar()">⭐ Mains Spéciales</a>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">🎁 Bonus</div>
+            <a href="#bonus" class="nav-item" onclick="closeSidebar()">🎁 Bonus Répétitions</a>
+            <a href="#win-conditions" class="nav-item" onclick="closeSidebar()">🏆 Bonus Conditions</a>
+            <a href="#flowers" class="nav-item" onclick="closeSidebar()">🌸 Bonus Victoire</a>
+        </div>
+        
+        <div class="nav-section">
+            <div class="nav-section-title">👑 Élite</div>
+            <a href="#ultimate" class="nav-item" onclick="closeSidebar()">👑 Mains Ultimes (88pts)</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+            <h1>🀄 Guide Mahjong Tactical</h1>
+            <p>Mains et Bonus organisés par type de construction</p>
+        </div>
+        
+        <div class="content">
+            <div class="legend">
+                <h3>🎯 Légende des tuiles</h3>
+                <div class="tiles-info">
+                    <div class="tile-type">
+                        <strong>Cercles :</strong> 🀙🀚🀛🀜🀝🀞🀟🀠🀡 (1-9)
+                    </div>
+                    <div class="tile-type">
+                        <strong>Bambous :</strong> 🀐🀑🀒🀓🀔🀕🀖🀗🀘 (1-9)
+                    </div>
+                    <div class="tile-type">
+                        <strong>Caractères :</strong> 🀇🀈🀉🀊🀋🀌🀍🀎🀏 (1-9)
+                    </div>
+                    <div class="tile-type">
+                        <strong>Vents :</strong> 🀀🀁🀂🀃 (Est, Sud, Ouest, Nord)
+                    </div>
+                    <div class="tile-type">
+                        <strong>Dragons :</strong> 🀄🀅🀆 (Rouge, Vert, Blanc)
+                    </div>
+                    <div class="tile-type">
+                        <strong>💡 Mains :</strong> Composition de votre jeu
+                    </div>
+                    <div class="tile-type">
+                        <strong>🎁 Bonus :</strong> Conditions supplémentaires
+                    </div>
+                </div>
+            </div>
+
+<!-- DÉBUT PARTIE 2 - COLLER APRÈS PARTIE 1 -->
+
+            <!-- MAINS BASÉES SUR LES CHOWS -->
+            <div class="category chows" id="chows">
+                <div class="category-header">
+                    Mains basées sur les Chows
+                </div>
+                <div class="combinations">
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Tout Chow</div>
+                            <div class="combo-points">2</div>
+                        </div>
+                        <div class="combo-description">Main composée uniquement de Chows (pas d'Honneur)</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀊🀋🀌</span>
+                                <span class="tile">🀙🀚🀛</span>
+                                <span class="tile">🀜🀝🀞</span>
+                                <span class="tile">🀐🀐</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Grande Suite</div>
+                            <div class="combo-points">8</div>
+                        </div>
+                        <div class="combo-description">1-2-3, 4-5-6, 7-8-9 dans 3 familles</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀜🀝🀞</span>
+                                <span class="tile">🀖🀗🀘</span>
+                                <span class="tile">🀃🀃🀃</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Triple Chow</div>
+                            <div class="combo-points">8</div>
+                        </div>
+                        <div class="combo-description">3 Chows identiques dans 3 familles</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀙🀚🀛</span>
+                                <span class="tile">🀐🀑🀒</span>
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Grande Suite Pure</div>
+                            <div class="combo-points">16</div>
+                        </div>
+                        <div class="combo-description">1-2-3, 4-5-6, 7-8-9 dans 1 famille</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀊🀋🀌</span>
+                                <span class="tile">🀍🀎🀏</span>
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Triple Chow Pur</div>
+                            <div class="combo-points">24</div>
+                        </div>
+                        <div class="combo-description">3 Chows identiques dans 1 famille</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Quadruple Chow Pur</div>
+                            <div class="combo-points">48</div>
+                        </div>
+                        <div class="combo-description">4 Chows identiques dans 1 famille</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀊🀋🀌</span>
+                                <span class="tile">🀊🀋🀌</span>
+                                <span class="tile">🀊🀋🀌</span>
+                                <span class="tile">🀊🀋🀌</span>
+                                <span class="tile">🀍🀍</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MAINS BASÉES SUR LES PUNGS -->
+            <div class="category pungs" id="pungs">
+                <div class="category-header">
+                    Mains basées sur les Pungs
+                </div>
+                <div class="combinations">
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Tout Pung</div>
+                            <div class="combo-points">6</div>
+                        </div>
+                        <div class="combo-description">4 Pungs + 1 Paire</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀇🀇</span>
+                                <span class="tile">🀙🀙🀙</span>
+                                <span class="tile">🀐🀐🀐</span>
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Triple Pung</div>
+                            <div class="combo-points">16</div>
+                        </div>
+                        <div class="combo-description">3 Pungs identiques dans 3 familles</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀉🀉🀉</span>
+                                <span class="tile">🀡🀡🀡</span>
+                                <span class="tile">🀘🀘🀘</span>
+                                <span class="tile">🀀🀁🀂</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Tout Pung Pair</div>
+                            <div class="combo-points">24</div>
+                        </div>
+                        <div class="combo-description">Uniquement des tuiles 2, 4, 6 ou 8</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀈🀈🀈</span>
+                                <span class="tile">🀊🀊🀊</span>
+                                <span class="tile">🀚🀚🀚</span>
+                                <span class="tile">🀜🀜🀜</span>
+                                <span class="tile">🀔🀔</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MAINS AVEC KONGS -->
+            <div class="category kongs" id="kongs">
+                <div class="category-header">
+                    Mains avec Kongs
+                </div>
+                <div class="combinations">
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Trois Kongs</div>
+                            <div class="combo-points">32</div>
+                        </div>
+                        <div class="combo-description">3 Kongs (peu importe exposés/cachés)</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀇🀇🀇</span>
+                                <span class="tile">🀙🀙🀙🀙</span>
+                                <span class="tile">🀐🀐🀐🀐</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Quatre Kongs</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">4 Kongs (peu importe exposés/cachés)</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀇🀇🀇</span>
+                                <span class="tile">🀙🀙🀙🀙</span>
+                                <span class="tile">🀐🀐🀐🀐</span>
+                                <span class="tile">🀀🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MAINS AVEC HONNEURS -->
+            <div class="category honors" id="honors">
+                <div class="category-header">
+                    Mains avec Honneurs (Dragons et Vents)
+                </div>
+                <div class="combinations">
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Deux Dragons</div>
+                            <div class="combo-points">6</div>
+                        </div>
+                        <div class="combo-description">2 Pungs de Dragon</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀄🀄🀄</span>
+                                <span class="tile">🀅🀅🀅</span>
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀙🀚🀛</span>
+                                <span class="tile">🀐🀐</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Trois Grands Vents</div>
+                            <div class="combo-points">12</div>
+                        </div>
+                        <div class="combo-description">3 Pungs de Vents</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀁🀁🀁</span>
+                                <span class="tile">🀂🀂🀂</span>
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀐🀐</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Tout Honneur</div>
+                            <div class="combo-points">64</div>
+                        </div>
+                        <div class="combo-description">Uniquement des Dragons et des Vents</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀁🀁🀁</span>
+                                <span class="tile">🀂🀂🀂</span>
+                                <span class="tile">🀄🀄🀄</span>
+                                <span class="tile">🀅🀅</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Quatre Grands Vents</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">4 Pungs des 4 Vents</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀁🀁🀁</span>
+                                <span class="tile">🀂🀂🀂</span>
+                                <span class="tile">🀃🀃🀃</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Trois Grands Dragons</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">3 Pungs des 3 Dragons</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀄🀄🀄</span>
+                                <span class="tile">🀅🀅🀅</span>
+                                <span class="tile">🀆🀆🀆</span>
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀀🀀</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!-- DÉBUT PARTIE 3 - COLLER APRÈS PARTIE 2 -->
+            
+            <!-- MAINS AVEC EXTRÉMITÉS -->
+            <div class="category extremes" id="extremes">
+                <div class="category-header">
+                    Mains avec Extrémités (1 et 9)
+                </div>
+                <div class="combinations">
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Extrémité ou Honneur partout</div>
+                            <div class="combo-points">4</div>
+                        </div>
+                        <div class="combo-description">Au moins 1 Extrémité ou 1 Honneur par figure</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀍🀎🀏</span>
+                                <span class="tile">🀇🀇🀇</span>
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀏🀏</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Tout Honneur et Extrémité</div>
+                            <div class="combo-points">32</div>
+                        </div>
+                        <div class="combo-description">Uniquement des Honneurs et des Extrémités</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀇🀇</span>
+                                <span class="tile">🀏🀏🀏</span>
+                                <span class="tile">🀐🀐🀐</span>
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Tout Extrémité</div>
+                            <div class="combo-points">64</div>
+                        </div>
+                        <div class="combo-description">Uniquement des 1 et des 9</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀇🀇</span>
+                                <span class="tile">🀏🀏🀏</span>
+                                <span class="tile">🀙🀙🀙</span>
+                                <span class="tile">🀡🀡🀡</span>
+                                <span class="tile">🀐🀐</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MAINS PAR FAMILLES -->
+            <div class="category pure" id="pure">
+                <div class="category-header">
+                    Mains par Familles
+                </div>
+                <div class="combinations">
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Semi-Pure</div>
+                            <div class="combo-points">6</div>
+                        </div>
+                        <div class="combo-description">1 seule famille avec des Honneurs</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀊🀋🀌</span>
+                                <span class="tile">🀍🀎🀏</span>
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Main Pure</div>
+                            <div class="combo-points">24</div>
+                        </div>
+                        <div class="combo-description">Tout dans 1 famille uniquement</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀊🀋🀌</span>
+                                <span class="tile">🀍🀎🀏</span>
+                                <span class="tile">🀉🀉🀉</span>
+                                <span class="tile">🀋🀋</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Les Trois Milieux</div>
+                            <div class="combo-points">24</div>
+                        </div>
+                        <div class="combo-description">Uniquement des tuiles 4, 5 et 6</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀊🀊🀊</span>
+                                <span class="tile">🀋🀋🀋</span>
+                                <span class="tile">🀌🀌🀌</span>
+                                <span class="tile">🀜🀝🀞</span>
+                                <span class="tile">🀔🀔</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MAINS SPÉCIALES -->
+            <div class="category special" id="special">
+                <div class="category-header">
+                    Mains Spéciales et Patterns Uniques
+                </div>
+                <div class="combinations">
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Sept Paires</div>
+                            <div class="combo-points">24</div>
+                        </div>
+                        <div class="combo-description">7 Paires (pattern spécial)</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀇</span>
+                                <span class="tile">🀈🀈</span>
+                                <span class="tile">🀉🀉</span>
+                                <span class="tile">🀙🀙</span>
+                                <span class="tile">🀚🀚</span>
+                                <span class="tile">🀛🀛</span>
+                                <span class="tile">🀐🀐</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Treize Orphelins</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">1 tuile de chaque Honneur et Extrémité + 1 en double</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀏🀐🀘🀙🀡🀀🀁🀂🀃🀄🀅🀆🀇</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Main Verte</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">Uniquement des tuiles vertes (2,3,4,6,8 Bambous, Dragon Vert)</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀑🀒🀓</span>
+                                <span class="tile">🀔🀔🀔</span>
+                                <span class="tile">🀖🀖🀖</span>
+                                <span class="tile">🀅🀅🀅</span>
+                                <span class="tile">🀕🀕</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- BONUS POUR REPETITIONS -->
+            <div class="category bonus" id="bonus">
+                <div class="category-header">
+                    Bonus pour Répétitions et Patterns
+                </div>
+                <div class="combinations">
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Double Chow Pur</div>
+                            <div class="combo-points">1</div>
+                        </div>
+                        <div class="combo-description">2 Chows identiques dans 1 famille</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀙🀚🀛</span>
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Pung de Dragon</div>
+                            <div class="combo-points">1</div>
+                        </div>
+                        <div class="combo-description">1 Pung de Dragon</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀄🀄🀄</span>
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀙🀚🀛</span>
+                                <span class="tile">🀐🀑🀒</span>
+                                <span class="tile">🀃🀃</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Kong Exposé</div>
+                            <div class="combo-points">1</div>
+                        </div>
+                        <div class="combo-description">1 Kong exposé</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀇🀇🀇</span>
+                                <span class="tile">🀙🀚🀛</span>
+                                <span class="tile">🀐🀑🀒</span>
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Kong Caché</div>
+                            <div class="combo-points">2</div>
+                        </div>
+                        <div class="combo-description">1 Kong caché</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">[🀇🀇🀇🀇]</span>
+                                <span class="tile">🀙🀚🀛</span>
+                                <span class="tile">🀐🀑🀒</span>
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Trois Pungs Cachés</div>
+                            <div class="combo-points">16</div>
+                        </div>
+                        <div class="combo-description">3 Pungs cachés</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">[🀇🀇🀇]</span>
+                                <span class="tile">[🀙🀙🀙]</span>
+                                <span class="tile">[🀐🀐🀐]</span>
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- BONUS CONDITIONS DE JEU -->
+            <div class="category win-conditions" id="win-conditions">
+                <div class="category-header">
+                    Bonus selon les Conditions de Jeu
+                </div>
+                <div class="combinations">
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Tout Caché Donné</div>
+                            <div class="combo-points">2</div>
+                        </div>
+                        <div class="combo-description">Finir sur un écart sans avoir rien exposé</div>
+                        <div class="combo-example">
+                            <div class="example-label">Condition :</div>
+                            <div style="color: #666; font-style: italic;">Main entièrement cachée + victoire sur défausse adverse</div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Tout Caché Tiré</div>
+                            <div class="combo-points">4</div>
+                        </div>
+                        <div class="combo-description">Finir en piochant la tuile sans avoir rien exposé</div>
+                        <div class="combo-example">
+                            <div class="example-label">Condition :</div>
+                            <div style="color: #666; font-style: italic;">Main entièrement cachée + victoire en piochant</div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Tout Exposé</div>
+                            <div class="combo-points">6</div>
+                        </div>
+                        <div class="combo-description">4 figures exposées et finir sur un écart</div>
+                        <div class="combo-example">
+                            <div class="example-label">Condition :</div>
+                            <div style="color: #666; font-style: italic;">Toutes les figures visibles + victoire sur défausse</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+<!-- DÉBUT PARTIE 4 - COLLER APRÈS PARTIE 3 -->
+
+            <!-- BONUS CONDITIONS DE VICTOIRE -->
+            <div class="category flowers" id="flowers">
+                <div class="category-header">
+                    Bonus selon la Façon de Gagner
+                </div>
+                <div class="combinations">
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Fleur ou Saison</div>
+                            <div class="combo-points">1</div>
+                        </div>
+                        <div class="combo-description">Avoir une tuile Fleur ou Saison</div>
+                        <div class="combo-example">
+                            <div class="example-label">Condition :</div>
+                            <div style="color: #666; font-style: italic;">Posséder une tuile bonus Fleur/Saison</div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Tirer Soi-Même</div>
+                            <div class="combo-points">1</div>
+                        </div>
+                        <div class="combo-description">Finir en piochant la tuile gagnante</div>
+                        <div class="combo-example">
+                            <div class="example-label">Condition :</div>
+                            <div style="color: #666; font-style: italic;">Piocher sa tuile de victoire</div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Finir sur la Paire</div>
+                            <div class="combo-points">1</div>
+                        </div>
+                        <div class="combo-description">Finir en complétant la paire</div>
+                        <div class="combo-example">
+                            <div class="example-label">Condition :</div>
+                            <div style="color: #666; font-style: italic;">La tuile gagnante complète votre paire</div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Finir au Milieu</div>
+                            <div class="combo-points">1</div>
+                        </div>
+                        <div class="combo-description">Finir sur la tuile du milieu d'un Chow</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div style="color: #666; font-style: italic;">Avoir 🀇🀉 et recevoir 🀈</div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Finir d'un Côté</div>
+                            <div class="combo-points">1</div>
+                        </div>
+                        <div class="combo-description">Finir sur 3 pour 1-2-3 ou 7 pour 7-8-9</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div style="color: #666; font-style: italic;">Avoir 🀇🀈 et recevoir 🀉, ou avoir 🀍🀎 et recevoir 🀏</div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Dernière Tuile Existante</div>
+                            <div class="combo-points">4</div>
+                        </div>
+                        <div class="combo-description">Finir avec la 4ème tuile quand les 3 autres sont visibles</div>
+                        <div class="combo-example">
+                            <div class="example-label">Condition :</div>
+                            <div style="color: #666; font-style: italic;">Les 3 autres exemplaires de votre tuile gagnante sont déjà visibles</div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Voler le Kong</div>
+                            <div class="combo-points">8</div>
+                        </div>
+                        <div class="combo-description">Finir avec la tuile qui transforme un Pung en Kong</div>
+                        <div class="combo-example">
+                            <div class="example-label">Condition :</div>
+                            <div style="color: #666; font-style: italic;">Un adversaire ajoute une 4ème tuile à un Pung exposé et c'est votre tuile gagnante</div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Finir sur Kong</div>
+                            <div class="combo-points">8</div>
+                        </div>
+                        <div class="combo-description">Finir grâce à la tuile de remplacement d'un Kong</div>
+                        <div class="combo-example">
+                            <div class="example-label">Condition :</div>
+                            <div style="color: #666; font-style: italic;">Gagner avec la tuile de remplacement après avoir fait un Kong</div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Dernière Tuile Jetée</div>
+                            <div class="combo-points">8</div>
+                        </div>
+                        <div class="combo-description">Finir sur la dernière défausse de la partie</div>
+                        <div class="combo-example">
+                            <div class="example-label">Condition :</div>
+                            <div style="color: #666; font-style: italic;">Gagner avec la toute dernière tuile défaussée avant la fin</div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Dernière Tuile du Mur</div>
+                            <div class="combo-points">8</div>
+                        </div>
+                        <div class="combo-description">Finir en piochant la dernière tuile du mur</div>
+                        <div class="combo-example">
+                            <div class="example-label">Condition :</div>
+                            <div style="color: #666; font-style: italic;">Gagner avec la toute dernière tuile disponible dans le mur</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- MAINS ULTIMES -->
+            <div class="category ultimate" id="ultimate">
+                <div class="category-header">
+                    Mains Ultimes (88 Points)
+                </div>
+                <div class="combinations">
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Treize Orphelins</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">1 tuile de chaque Honneur et Extrémité + 1 en double</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀏🀐🀘🀙🀡🀀🀁🀂🀃🀄🀅🀆🀇</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Neuf Portes</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">1-1-1, 9-9-9, 2-3-4-5-6-7-8 cachés dans 1 famille</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀇🀇🀈🀉🀊🀋🀌🀍🀎🀏🀏🀏🀋</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Main Verte</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">Uniquement des tuiles vertes (2,3,4,6,8 Bambous, Dragon Vert)</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀑🀒🀓</span>
+                                <span class="tile">🀔🀔🀔</span>
+                                <span class="tile">🀖🀖🀖</span>
+                                <span class="tile">🀅🀅🀅</span>
+                                <span class="tile">🀕🀕</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Sept Paires Pures Consécutives</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">7 Paires consécutives dans 1 famille</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀇</span>
+                                <span class="tile">🀈🀈</span>
+                                <span class="tile">🀉🀉</span>
+                                <span class="tile">🀊🀊</span>
+                                <span class="tile">🀋🀋</span>
+                                <span class="tile">🀌🀌</span>
+                                <span class="tile">🀍🀍</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Quatre Kongs</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">4 Kongs (peu importe exposés/cachés)</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀇🀇🀇🀇</span>
+                                <span class="tile">🀙🀙🀙🀙</span>
+                                <span class="tile">🀐🀐🀐🀐</span>
+                                <span class="tile">🀀🀀🀀🀀</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Quatre Grands Vents</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">4 Pungs des 4 Vents</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀀🀀🀀</span>
+                                <span class="tile">🀁🀁🀁</span>
+                                <span class="tile">🀂🀂🀂</span>
+                                <span class="tile">🀃🀃🀃</span>
+                                <span class="tile">🀄🀄</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="combination">
+                        <div class="combo-header">
+                            <div class="combo-name">Trois Grands Dragons</div>
+                            <div class="combo-points">88</div>
+                        </div>
+                        <div class="combo-description">3 Pungs des 3 Dragons</div>
+                        <div class="combo-example">
+                            <div class="example-label">Exemple :</div>
+                            <div class="tiles">
+                                <span class="tile">🀄🀄🀄</span>
+                                <span class="tile">🀅🀅🀅</span>
+                                <span class="tile">🀆🀆🀆</span>
+                                <span class="tile">🀇🀈🀉</span>
+                                <span class="tile">🀀🀀</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.querySelector('.overlay');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+        }
+
+        // Navigation fluide vers les sections
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Fermer le menu si on clique en dehors
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.querySelector('.menu-toggle');
+            
+            if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                closeSidebar();
+            }
+        });
+
+        // Animation d'apparition au scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observer toutes les catégories
+        document.querySelectorAll('.category').forEach(category => {
+            category.style.opacity = '0';
+            category.style.transform = 'translateY(30px)';
+            category.style.transition = 'all 0.6s ease';
+            observer.observe(category);
+        });
+
+        // Effet de survol sur les tuiles
+        document.querySelectorAll('.tile').forEach(tile => {
+            tile.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.1)';
+                this.style.zIndex = '10';
+                this.style.transition = 'all 0.2s ease';
+            });
+            
+            tile.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.zIndex = '1';
+            });
+        });
+
+        // Recherche rapide
+        function addSearchFunction() {
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Rechercher une main...';
+            searchInput.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 10px 15px;
+                border: 2px solid #667eea;
+                border-radius: 25px;
+                background: white;
+                z-index: 1002;
+                font-size: 14px;
+                width: 200px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                outline: none;
+            `;
+            
+            document.body.appendChild(searchInput);
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const combinations = document.querySelectorAll('.combination');
+                
+                combinations.forEach(combo => {
+                    const name = combo.querySelector('.combo-name').textContent.toLowerCase();
+                    const description = combo.querySelector('.combo-description').textContent.toLowerCase();
+                    
+                    if (name.includes(searchTerm) || description.includes(searchTerm)) {
+                        combo.style.display = 'block';
+                        combo.style.backgroundColor = searchTerm ? '#fff3cd' : '';
+                    } else {
+                        combo.style.display = searchTerm ? 'none' : 'block';
+                        combo.style.backgroundColor = '';
+                    }
+                });
+                
+                // Masquer les catégories vides
+                document.querySelectorAll('.category').forEach(category => {
+                    const visibleCombos = category.querySelectorAll('.combination[style*="display: block"], .combination:not([style*="display: none"])');
+                    if (searchTerm && visibleCombos.length === 0) {
+                        category.style.display = 'none';
+                    } else {
+                        category.style.display = 'block';
+                    }
+                });
+            });
+        }
+        
+        // Activer la recherche
+        addSearchFunction();
+        
+        // Compteur de points automatique
+        function addPointsCounter() {
+            const counter = document.createElement('div');
+            counter.id = 'points-counter';
+            counter.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #FF6B6B, #EE5A52);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 50px;
+                font-weight: bold;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 1002;
+                display: none;
+            `;
+            counter.innerHTML = 'Points: <span id="total-points">0</span>';
+            document.body.appendChild(counter);
+        }
+        
+        addPointsCounter();
+        
+        // Message de bienvenue avec easter egg
+        console.log('🀄 Guide Mahjong Tactical v2.0 chargé avec succès !');
+        console.log('💡 Utilisez le menu burger (☰) pour naviguer rapidement');
+        console.log('🔍 Utilisez la barre de recherche en haut à droite');
+        console.log('🎯 Cliquez sur les tuiles pour des effets visuels !');
+        console.log('🏆 Astuce: Tapez "konami" dans la recherche pour une surprise...');
+        
+        // Easter egg Konami code
+        let konamiCode = [];
+        const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
+        
+        document.addEventListener('keydown', function(e) {
+            konamiCode.push(e.code);
+            if (konamiCode.length > konamiSequence.length) {
+                konamiCode.shift();
+            }
+            
+            if (JSON.stringify(konamiCode) === JSON.stringify(konamiSequence)) {
+                document.body.style.background = 'linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57, #ff9ff3)';
+                document.body.style.backgroundSize = '600% 600%';
+                document.body.style.animation = 'rainbow 2s ease infinite';
+                
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes rainbow {
+                        0% { background-position: 0% 50%; }
+                        50% { background-position: 100% 50%; }
+                        100% { background-position: 0% 50%; }
+                    }
+                `;
+                document.head.appendChild(style);
+                
+                setTimeout(() => {
+                    document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    document.body.style.animation = '';
+                }, 5000);
+            }
+        });
+    </script>
+</body>
+</html>
+
+<!-- FIN DU GUIDE COMPLET - TOUTES LES PARTIES ASSEMBLÉES -->
